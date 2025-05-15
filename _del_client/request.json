@@ -1,0 +1,8 @@
+{
+    "object_cost": 5000000,
+    "initial_payment": 1000000,
+    "months": 240,
+    "program": {
+        "salary": true
+    }
+}

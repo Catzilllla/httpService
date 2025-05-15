@@ -7,7 +7,7 @@ RUN go mod tidy
 
 COPY . .
 
-RUN go build -o app ./cmd/server
+RUN go build -o app ./ipocalc/cmd/server
 
 EXPOSE 8080
 
