@@ -2,18 +2,30 @@ package services
 
 import (
 	"math"
+
+	"github.com/Catzilllla/httpService/ipocalc/internal/models"
 )
 
-func calculateMortgage() (jsonAggregate, error) {
-	var newProgramm jsonProgram
+func CalculateMortgage(prog models.JsonProgram, req models.JsonRequest) (models.JsonAggregate, error) {
+	// var newProgramm jsonProgram
 
-	rate := 1
-	loanSum := 1
-	monthlyPayment := 1
-	overpayment := 1
-	lastPaymentStr := 1
+	// Определение ставки
+	var rate float64
+	switch {
+	case prog.Military:
+		rate = 9
+	case prog.Salary:
+		rate = 8
+	case prog.Base:
+		rate = 10
+	}
 
-	return jsonAggregate{
+	loanSum := 123.3243
+	monthlyPayment := 1000.344
+	overpayment := 324.434
+	lastPaymentStr := "dsfsd"
+
+	return models.JsonAggregate{
 		Rate:            rate,
 		LoanSum:         math.Round(loanSum),
 		MonthlyPayment:  math.Round(monthlyPayment),

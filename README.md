@@ -1,7 +1,5 @@
-# httpService
-Http json service deposit calculator
-
 # структура
+```
 ipocalc/
 ├── cmd/
 │   └── server/
@@ -26,9 +24,37 @@ ipocalc/
 ├── go.mod
 ├── go.sum
 └── README.md
+```
+
+## CACHE 
+```
+выбор системы хранения кэша
+```
+![Alt text](img/image1.png)
+
+Итог: на данный момент выбрали систему go-cache изза простоты использования
+
+## CALCULATOR
+```
+
+```
+![Alt text](img/image2.png)
+
+## HTTPSERVER
+```
+система работы сервера, разрбрать многопоточность
+```
+
+## TEST
+
+```
+
+```
+
+## LOGGING
 
 
-
+```
 Общая структура решения
     Основной файл: main.go — содержит сервер, маршруты, middleware, бизнес-логику.
     Конфигурация: config.yml — порт.
@@ -55,9 +81,11 @@ ipocalc/
     Инициализируйте модуль:
         go mod init github.com/yourusername/ipocalc
         go mod tidy
-
+```
+```
     Постройте образ:
         docker build -t ipocalc .
 
     Запустите контейнер:
         docker run -d -p 8080:8080 --name ipocalc-container ipocalc
+```

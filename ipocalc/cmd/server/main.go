@@ -6,41 +6,21 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
+	"github.com/Catzilllla/httpService/ipocalc/configs"
+
+	cachemod "github.com/Catzilllla/httpService/ipocalc/internal/cache"
 	"github.com/Catzilllla/httpService/ipocalc/internal/handlers"
-
-	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
-	Server struct {
-		Port int    `yaml:"port"`
-		Host string `yaml:"host"`
-	} `yaml:"server"`
-}
-
-type jsonProgram struct {
-	Salary   bool `json:"salary"`
-	Military bool `json:"military"`
-	Base     bool `json:"base"`
-}
-
-type jsonResult struct {
-	ObjectCost     float64     `json:"object_cost"`
-	InitialPayment float64     `json:"initial_payment"`
-	Months         int         `json:"months"`
-	Program        jsonProgram `json:"program"`
-}
-
-type jsonAggregate struct {
-	Rate            float64 `json:"rate"`
-	LoanSum         float64 `json:"loan_sum"`
-	MonthlyPayment  float64 `json:"monthly_payment"`
-	Overpayment     float64 `json:"overpayment"`
-	LastPaymentDate string  `json:"last_payment_date"`
-}
-
 func main() {
+	// cache initialising
+	// здесь проводим инициализацию TTL
+	//
+	// Инициализируем кэш с TTL (например, 5 минут для кэшируемых данных и 10 минут для очистки устаревших данных)
+	cacheStore := cachemod.NewCacheStore(5*time.Minute, 10*time.Minute)
+
 	// read config
 	pwd, _ := os.Getwd()
 	fmt.Println("Current working directory:", pwd)
@@ -48,36 +28,17 @@ func main() {
 
 	fmt.Println(configPath)
 
-	config, err := readConfig(configPath)
+	config, err := configs.ReadConfig(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	addr := fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
-
+	// addr := fmt.Sprintf("http://%s:%d", "0.0.0.0", "8080")
 	// reg heandlers
-	http.HandleFunc("/api", handlers.HandleAPI)
-	http.HandleFunc("/execute", handlers.HandleExecute)
+
+	http.HandleFunc("/execute", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleExecute(w, r, cacheStore)
+	})
 	http.HandleFunc("/cache", handlers.HandleCache)
 	http.ListenAndServe(addr, nil)
-}
-
-func readConfig(filename string) (*Config, error) {
-	var cfg Config
-	data, err := os.ReadFile(filename)
-	if err != nil {
-		return nil, fmt.Errorf("error reading file: %w", err)
-	}
-
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return nil, fmt.Errorf("YAML error: %w", err)
-	}
-
-	// default config
-	if cfg.Server.Port == 0 {
-		cfg.Server.Port = 8080
-	}
-	if cfg.Server.Host == "" {
-		cfg.Server.Host = "0.0.0.0"
-	}
-	return &cfg, nil
 }

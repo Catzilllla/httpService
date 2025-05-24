@@ -39,7 +39,7 @@ func main() {
 
 	// read json for POST
 	pwd, _ := os.Getwd()
-	jsonPath := filepath.Join(pwd, "client", "request.json")
+	jsonPath := filepath.Join(pwd, "request.json")
 
 	var addresForJsonData RequestDataPost
 	dataFromJsonFile, err := os.ReadFile(jsonPath)
