@@ -39,6 +39,8 @@ func main() {
 	http.HandleFunc("/execute", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleExecute(w, r, cacheStore)
 	})
-	http.HandleFunc("/cache", handlers.HandleCache)
+	http.HandleFunc("/cache", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleCache(w, r, cacheStore)
+	})
 	http.ListenAndServe(addr, nil)
 }

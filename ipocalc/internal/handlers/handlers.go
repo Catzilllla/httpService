@@ -94,29 +94,22 @@ func HandleExecute(w http.ResponseWriter, r *http.Request, storeCache *cachemod.
 	fmt.Println(aggregates)
 }
 
-func HandleCache(w http.ResponseWriter, r *http.Request) {
+func HandleCache(w http.ResponseWriter, r *http.Request, storeCache *cachemod.CacheStore) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed) // 405
 		w.Write([]byte("Only GET-requests are allowed"))
 		return
 	}
 
-	response := map[string]interface{}{
-		"object_cost":     5000000,
-		"initial_payment": 1000000,
-		"months":          240,
-		"program": map[string]bool{
-			"salary": true,
-		},
-	}
+	allItems := storeCache.GetAll()
 
 	w.Header().Set("Content-Type", "application/json")
 
-	if err := json.NewEncoder(w).Encode(response); err != nil {
+	if err := json.NewEncoder(w).Encode(allItems); err != nil {
 		http.Error(w, "Error encoding response", http.StatusInternalServerError)
 		return
 	}
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(allItems)
 }
 
 // func LoggingMiddleware(next http.Handler) http.Handler {

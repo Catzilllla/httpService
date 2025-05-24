@@ -18,13 +18,15 @@ func HashRequestBody(body []byte) string {
 
 // Структура для хранения кэша
 type CacheStore struct {
-	cache *cache.Cache
+	cache    *cache.Cache
+	keycache []string
 }
 
 // Создание нового кэша с указанным TTL
 func NewCacheStore(defaultTTL, cleanupInterval time.Duration) *CacheStore {
 	return &CacheStore{
-		cache: cache.New(defaultTTL, cleanupInterval),
+		cache:    cache.New(defaultTTL, cleanupInterval),
+		keycache: make([]string, 0),
 	}
 }
 
@@ -46,4 +48,14 @@ func (c *CacheStore) Get(key string, dest interface{}) error {
 		return fmt.Errorf("ключ %s не найден", key)
 	}
 	return json.Unmarshal(value.([]byte), dest)
+}
+
+func (c *CacheStore) GetAll() map[string]interface{} {
+	allItems := make(map[string]interface{})
+	for _, key := range c.keycache {
+		if value, found := c.cache.Get(key); found {
+			allItems[key] = value
+		}
+	}
+	return allItems
 }
