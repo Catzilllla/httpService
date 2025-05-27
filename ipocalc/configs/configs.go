@@ -2,9 +2,8 @@ package configs
 
 import (
 	"fmt"
+	"ipocalc/ipocalc/internal/models"
 	"os"
-
-	"github.com/Catzilllla/httpService/ipocalc/internal/models"
 
 	"gopkg.in/yaml.v3"
 )

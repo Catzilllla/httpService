@@ -1,35 +1,45 @@
 package services
 
 import (
+	"ipocalc/ipocalc/internal/models"
 	"math"
-
-	"github.com/Catzilllla/httpService/ipocalc/internal/models"
+	"time"
 )
 
-func CalculateMortgage(prog models.JsonProgram, req models.JsonRequest) (models.JsonAggregate, error) {
-	// var newProgramm jsonProgram
-
-	// Определение ставки
+func CalculateMortgage(requestData models.JsonRequest) (models.JsonAggregate, error) {
+	/* Определение ставки */
 	var rate float64
 	switch {
-	case prog.Military:
+	case requestData.Program.Military:
 		rate = 9
-	case prog.Salary:
+	case requestData.Program.Salary:
 		rate = 8
-	case prog.Base:
+	case requestData.Program.Base:
 		rate = 10
 	}
 
-	loanSum := 123.3243
-	monthlyPayment := 1000.344
-	overpayment := 324.434
-	lastPaymentStr := "dsfsd"
+	loanMonth := requestData.Months
+
+	/* Переводим годовую процентную ставку в месячную */
+	monthlyRate := rate / 12
+	loanSum := requestData.ObjectCost - requestData.InitialPayment
+
+	/* аннуитентный ежемесячный платеж */
+	pm := loanSum * (monthlyRate * math.Pow(1+monthlyRate, float64(loanMonth))) / (math.Pow(1+monthlyRate, float64(loanMonth)) - 1)
+
+	/* переплата за весь срок кредита */
+	totalPayment := pm * float64(loanMonth)
+	overpayment := totalPayment - loanSum
+
+	/* рассчитываем дату последнего платежа */
+	startDate := time.Now()
+	lastPaymentStr := startDate.AddDate(0, loanMonth, 0)
 
 	return models.JsonAggregate{
 		Rate:            rate,
 		LoanSum:         math.Round(loanSum),
-		MonthlyPayment:  math.Round(monthlyPayment),
+		MonthlyPayment:  math.Round(pm),
 		Overpayment:     math.Round(overpayment),
-		LastPaymentDate: lastPaymentStr,
+		LastPaymentDate: string(lastPaymentStr.Format("02-01-2006 15:04:05")),
 	}, nil
 }

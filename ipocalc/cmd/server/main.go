@@ -2,24 +2,19 @@ package main
 
 import (
 	"fmt"
+	"ipocalc/ipocalc/configs"
+	cachemod "ipocalc/ipocalc/internal/cache"
+	"ipocalc/ipocalc/internal/handlers"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
-
-	"github.com/Catzilllla/httpService/ipocalc/configs"
-
-	cachemod "github.com/Catzilllla/httpService/ipocalc/internal/cache"
-	"github.com/Catzilllla/httpService/ipocalc/internal/handlers"
 )
 
 func main() {
-	// cache initialising
-	// здесь проводим инициализацию TTL
-	//
-	// Инициализируем кэш с TTL (например, 5 минут для кэшируемых данных и 10 минут для очистки устаревших данных)
-	cacheStore := cachemod.NewCacheStore(5*time.Minute, 10*time.Minute)
+	// sync MAP (время истечения срока действия элементов и интервал очистки)
+	cacheStore := cachemod.NewContainer(5*time.Minute, 10*time.Minute)
 
 	// read config
 	pwd, _ := os.Getwd()
@@ -36,6 +31,7 @@ func main() {
 	// addr := fmt.Sprintf("http://%s:%d", "0.0.0.0", "8080")
 	// reg heandlers
 
+	// Регистрируем обработчик с передачей cacheStore через замыкание
 	http.HandleFunc("/execute", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleExecute(w, r, cacheStore)
 	})
