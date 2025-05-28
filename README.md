@@ -27,12 +27,12 @@ ipocalc/
 ```
 
 ## CACHE 
+sync MAP (время истечения срока действия элементов и интервал очистки)
 ```
-выбор системы хранения кэша
+cacheStore := cachemod.NewContainer(5*time.Minute, 10*time.Minute)
 ```
-![Alt text](img/image1.png)
 
-Итог: на данный момент выбрали систему go-cache изза простоты использования
+
 
 ## CALCULATOR
 ```
@@ -42,50 +42,55 @@ ipocalc/
 
 ## HTTPSERVER
 ```
-система работы сервера, разрбрать многопоточность
+net/http
+(w http.ResponseWriter, r *http.Request)
+
 ```
 
 ## TEST
 
 ```
+тесты handlers
+```
 
+## LINTER
+```
+`golangci-lint`
 ```
 
 ## LOGGING
-
-
+middleware, который будет выводить в консоль информацию о запросе:
 ```
-Общая структура решения
-    Основной файл: main.go — содержит сервер, маршруты, middleware, бизнес-логику.
-    Конфигурация: config.yml — порт.
-    Кэш: реализован в памяти (глобальный []Result с мьютексом).
-    Валидация: проверка программ, суммы, ошибок.
-    Логика расчетов: расчет ставки, платежа, переплаты, даты.
-    API: два обработчика (/execute, /cache).
-    Middleware: логирование запросов.
-    Тесты: в файле main_test.go.
-    Docker: Dockerfile.
-    Makefile: для команд.
 
-Итоги
-    Вы получите полноценный сервис с REST API, кэшем, middleware, конфигурацией.
-    Можно запускать через Docker.
-    Можно писать юнит-тесты.
-    Все зависимости — "завендорены" (используйте go mod).
+   - `status_code` - http код запроса
+   - `duration` - время работы эндпоинта (ns)
 
-
-Инструкции по запуску
-    Создайте папку ipocalc/
-    Поместите туда все файлы
-    В терминале перейдите в папку ipocalc/
-    Инициализируйте модуль:
-        go mod init github.com/yourusername/ipocalc
-        go mod tidy
+   2022/02/17 19:26:52 status_code: 200, duration: 243042 ns
+   2022/02/17 19:26:53 status_code: 400, duration: 18875 ns
 ```
-```
-    Постройте образ:
-        docker build -t ipocalc .
 
-    Запустите контейнер:
-        docker run -d -p 8080:8080 --name ipocalc-container ipocalc
+## MAKEFILE
+```
+
+build:
+	@echo "Сборка бинарного файла..."
+
+test:
+	@echo "Запуск тестов..."
+
+docker-build:
+	@echo "Сборка Docker-образа..."
+
+docker-run:
+	@echo "Запуск Docker-контейнера..."
+
+docker-stop:
+	@echo "Остановка всех работающих контейнеров..."
+
+clean:
+	@echo "Очистка..."
+
+lint:
+	golangci-lint run
+
 ```

@@ -52,14 +52,40 @@ func HandleExecute(w http.ResponseWriter, r *http.Request, storeCache *cachemod.
 			Program        JsonProgram `json:"program"`
 		}
 	*/
-	var requestMapa map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&requestMapa); err != nil {
+	var requestMap models.JsonRequest
+	if err := json.NewDecoder(r.Body).Decode(&requestMap); err != nil {
 		http.Error(w, `{"error":"invalid json"}`, http.StatusBadRequest)
 		return
 	}
 
+	/* обработка случаев */
+	selectedCount := 0
+	if requestMap.Program.Salary {
+		selectedCount++
+	}
+	if requestMap.Program.Military {
+		selectedCount++
+	}
+	if requestMap.Program.Base {
+		selectedCount++
+	}
+	if selectedCount == 0 {
+		http.Error(w, `{"error": "choose program"}`, http.StatusBadRequest)
+		return
+	}
+	if selectedCount > 1 {
+		http.Error(w, `{"error": "choose only 1 program"}`, http.StatusBadRequest)
+		return
+	}
+
+	/* первоначальный взнос */
+	if requestMap.InitialPayment < requestMap.ObjectCost*0.2 {
+		http.Error(w, `{"error": "the initial payment should be more"}`, http.StatusBadRequest)
+		return
+	}
+
 	/* requestMapa в  байты | потом в  HASH */
-	jsonData, err := json.Marshal(requestMapa)
+	jsonData, err := json.Marshal(requestMap)
 	if err != nil {
 		log.Fatal("Error marshaling data Json to bytes")
 		return
@@ -99,20 +125,24 @@ func HandleExecute(w http.ResponseWriter, r *http.Request, storeCache *cachemod.
 	}
 
 	/* задействуем бэк если не нашли выше */
-	calculating, err := services.CalculateMortgage(req)
+	resultJson, err := services.CalculateMortgage(req)
 	if err != nil {
 		log.Fatal("cant calculating")
 	}
-	storeCache.Set(keyCacheId, calculating, 5*time.Minute)
+
+	storeCache.Set(keyCacheId, resultJson, 5*time.Minute)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(calculating)
+	json.NewEncoder(w).Encode(resultJson)
 	fmt.Println("BACKEND")
 	// fmt.Println(reflect.TypeOf(calculating))
 	// fmt.Println(calculating)
 }
 
 func HandleCache(w http.ResponseWriter, r *http.Request, storeCache *cachemod.Cache) {
+	/* инфа о запросе */
+	// httpRequestInformation(r)
+
 	if r.Method != http.MethodGet {
 		http.Error(w, "Only POST allowed", http.StatusMethodNotAllowed)
 		return
@@ -120,15 +150,13 @@ func HandleCache(w http.ResponseWriter, r *http.Request, storeCache *cachemod.Ca
 
 	result := storeCache.GetAll()
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
-	// fmt.Println("BUFFER")
-	// fmt.Println(reflect.TypeOf(result))
-	// fmt.Println(result)
-}
+	if len(result) == 0 {
+		http.Error(w, `{"error": "empty cache"}`, http.StatusBadRequest)
+		return
+	}
 
-// func LoggingMiddleware(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		next.ServeHTTP(w, r)
-// 	})
-// }
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(result); err != nil {
+		http.Error(w, "Failed to encode result", http.StatusInternalServerError)
+	}
+}
