@@ -125,10 +125,12 @@ func HandleExecute(w http.ResponseWriter, r *http.Request, storeCache *cachemod.
 	}
 
 	/* задействуем бэк если не нашли выше */
-	resultJson, err := services.CalculateMortgage(req)
+	newId := storeCache.Counter
+	resultJson, err := services.CalculateMortgage(req, newId)
 	if err != nil {
 		log.Fatal("cant calculating")
 	}
+	storeCache.Counter++
 
 	storeCache.Set(keyCacheId, resultJson, 5*time.Minute)
 

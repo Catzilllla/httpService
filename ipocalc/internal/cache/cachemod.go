@@ -87,7 +87,6 @@ func (c *Cache) Set(key string, value interface{}, duration time.Duration) {
 		Expiration: expiration,
 		Created:    time.Now(),
 	}
-
 }
 
 func (c *Cache) Get(key string) (interface{}, bool) {

@@ -7,8 +7,9 @@ COPY . .
 RUN go build -o app ./ipocalc/cmd/server
 
 FROM alpine:latest
+WORKDIR /mapp
 COPY --from=builder /app .
-COPY ./ipocalc/configs/config.yml /app/ipocalc/configs/config.yml
+COPY ./ipocalc/configs/config.yml /app/config.yml
 EXPOSE 8080
 
 CMD ["./app"]

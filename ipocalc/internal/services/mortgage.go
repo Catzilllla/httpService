@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func CalculateMortgage(requestData models.JsonRequest) (models.JsResult, error) {
+func CalculateMortgage(requestData models.JsonRequest, myID int) (models.JsResult, error) {
 	/* Определение ставки */
 	var rate float64
 	switch {
@@ -36,15 +36,15 @@ func CalculateMortgage(requestData models.JsonRequest) (models.JsResult, error) 
 	lastPaymentStr := startDate.AddDate(0, loanMonth, 0)
 
 	return models.JsResult{
-		ID:      1,
-		Params:  requestData,
-		Program: requestData.Program,
+		ID:     myID,
+		Params: requestData,
 		Aggregates: models.JsonAggregate{
 			Rate:            rate,
 			LoanSum:         loanSum,
 			MonthlyPayment:  pm,
 			Overpayment:     overpayment,
-			LastPaymentDate: string(lastPaymentStr.Format("02-01-2006 15:04:05")),
+			LastPaymentDate: string(lastPaymentStr.Format("02-01-2006")),
+			// LastPaymentDate: string(lastPaymentStr.Format("02-01-2006 15:04:05")),
 		},
 	}, nil
 

@@ -19,7 +19,8 @@ docker-build:
 
 docker-run:
 	@echo "Запуск Docker-контейнера..."
-	docker run -p $(PORT):8080 --rm $(DOCKER_IMAGE_NAME)
+	docker rm -f $(DOCKER_IMAGE_NAME)-container || true
+	docker run -d -p $(PORT):8080 --name $(DOCKER_IMAGE_NAME)-container $(DOCKER_IMAGE_NAME)
 
 docker-stop:
 	@echo "Остановка всех работающих контейнеров..."
@@ -41,6 +42,3 @@ help:
 	@echo "  docker-run  - Запуск контейнера Docker"
 	@echo "  docker-stop - Остановка всех работающих контейнеров"
 	@echo "  clean       - Удаление бинарного файла"
-
-
-
