@@ -131,7 +131,6 @@ func HandleExecute(w http.ResponseWriter, r *http.Request, storeCache *cachemod.
 		log.Fatal("cant calculating")
 	}
 	storeCache.Counter++
-
 	storeCache.Set(keyCacheId, resultJson, 5*time.Minute)
 
 	w.Header().Set("Content-Type", "application/json")

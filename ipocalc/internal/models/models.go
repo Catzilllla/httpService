@@ -39,7 +39,6 @@ type JsonAggregate struct {
 type JsResult struct {
 	ID         int           `json:"id"`
 	Params     JsonRequest   `json:"params"`
-	Program    JsonProgram   `json:"program"`
 	Aggregates JsonAggregate `json:"aggregates"`
 }
 

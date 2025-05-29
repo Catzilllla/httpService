@@ -48,3 +48,35 @@ echo ".................................."
 echo $request
 echo $1
 
+if [ "$1" -eq 4 ]; then
+  request="POST"
+  path='execute'
+
+  curl -X $request \
+  -H "Content-Type: application/json" \
+  -d '{
+    "object_cost": 5000000,
+    "initial_payment": 1000000,
+    "months": 240,
+    "program": {}
+  }' \
+  http://38.107.235.2:$port/$path
+fi
+
+if [ "$1" -eq 5 ]; then
+  request="POST"
+  path='execute'
+
+  curl -X $request \
+  -H "Content-Type: application/json" \
+  -d '{
+    "object_cost": 3000000,
+    "initial_payment": 3000000,
+    "months": 1240,
+    "program": {
+        "salary": true,
+        "military": true,
+    }
+  }' \
+  http://38.107.235.2:$port/$path
+fi

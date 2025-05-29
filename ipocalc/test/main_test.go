@@ -64,7 +64,7 @@ func TestHandleCache(t *testing.T) {
 				Program:        models.JsonProgram{Salary: true},
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody:   `{"id":0,"params":{"object_cost":5000000,"initial_payment":1000000,"months":240,"program":{"salary":true,"military":false,"base":false}},"program":{"salary":true,"military":false,"base":false},"aggregates":{"rate":8,"loan_sum":4000000,"monthly_payment":2666666.6666666665,"overpayment":636000000,"last_payment_date":"29-05-2045 11:12:30"}}`,
+			expectedBody:   `{"id":0,"params":{"object_cost":5000000,"initial_payment":1000000,"months":240,"program":{"salary":true,"military":false,"base":false}},"aggregates":{"rate":8,"loan_sum":4000000,"monthly_payment":2666666.6666666665,"overpayment":636000000,"last_payment_date":"29-05-2045"}}`,
 		},
 	}
 

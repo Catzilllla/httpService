@@ -36,8 +36,17 @@ func CalculateMortgage(requestData models.JsonRequest, myID int) (models.JsResul
 	lastPaymentStr := startDate.AddDate(0, loanMonth, 0)
 
 	return models.JsResult{
-		ID:     myID,
-		Params: requestData,
+		ID: myID,
+		Params: models.JsonRequest{
+			ObjectCost:     requestData.ObjectCost,
+			InitialPayment: requestData.InitialPayment,
+			Months:         requestData.Months,
+			Program: models.JsonProgram{
+				Salary:   requestData.Program.Salary,
+				Military: requestData.Program.Military,
+				Base:     requestData.Program.Base,
+			},
+		},
 		Aggregates: models.JsonAggregate{
 			Rate:            rate,
 			LoanSum:         loanSum,
@@ -47,14 +56,11 @@ func CalculateMortgage(requestData models.JsonRequest, myID int) (models.JsResul
 			// LastPaymentDate: string(lastPaymentStr.Format("02-01-2006 15:04:05")),
 		},
 	}, nil
-
-	/*
-		return models.JsonAggregate{
-			Rate:            rate,
-			LoanSum:         loanSum,
-			MonthlyPayment:  pm,
-			Overpayment:     overpayment,
-			LastPaymentDate: string(lastPaymentStr.Format("02-01-2006 15:04:05")),
-		}, nil
-	*/
 }
+
+// {"id":0,"params":{"object_cost":5000000,"initial_payment":1000000,"months":240,
+// "program":{"salary":true,"military":false,"base":false}},
+// "aggregates":{"rate":8,"loan_sum":4000000,"monthly_payment":2666666.6666666665,"overpayment":636000000,"last_payment_date":"29-05-2045"}}, got
+// {"id":0,"params":{"object_cost":5000000,"initial_payment":1000000,"months":240,
+// "program":{"salary":true,"military":false,"base":false}},
+// "aggregates":{"rate":8,"loan_sum":4000000,"monthly_payment":2666666.6666666665,"overpayment":636000000,"last_payment_date":"29-05-2045"}}
